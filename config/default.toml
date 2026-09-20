@@ -1,0 +1,27 @@
+[service]
+name = "AdBlockService"
+profile = "Balanced"
+enabled = true
+
+[network]
+allow_fail_open = true
+upstream_dns = ["1.1.1.1", "8.8.8.8", "9.9.9.9"]
+
+[filters]
+blocklists = [
+  "ads",
+  "trackers",
+  "telemetry",
+  "analytics",
+  "malware"
+]
+allowlist = []
+blocklist = []
+
+[logging]
+level = "info"
+path = "%ProgramData%\\AdBlocker\\logs"
+
+[updates]
+interval_hours = 24
+allow_auto_update = false

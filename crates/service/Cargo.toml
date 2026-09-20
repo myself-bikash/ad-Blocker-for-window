@@ -1,0 +1,27 @@
+[package]
+name = "adblock-service"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "adblock_service"
+path = "src/lib.rs"
+
+[[bin]]
+name = "adblock-service"
+path = "src/main.rs"
+
+[dependencies]
+adblock-config = { path = "../config" }
+adblock-core = { path = "../core" }
+adblock-diagnostics = { path = "../diagnostics" }
+adblock-dns = { path = "../dns" }
+adblock-rules = { path = "../rules" }
+adblock-network = { path = "../network" }
+adblock-wfp = { path = "../wfp" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+windows-service = { workspace = true }
