@@ -14,6 +14,7 @@ This project is designed as a practical, service-first MVP for maximum practical
 - [Important Note](#important-note)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Master Command](#master-command)
 - [Build and Test](#build-and-test)
 - [Install as Administrator](#install-as-administrator)
 - [Stale Service Cleanup](#stale-service-cleanup)
@@ -69,15 +70,28 @@ Before installing, make sure the target Windows machine has:
 
 ```powershell
 git clone https://github.com/myself-bikash/ad-Blocker-for-window.git
-cd "Ads Blocker for Window"
+cd ad-Blocker-for-window
 .\scripts\install.ps1
 ```
 
 > If you are already inside the repository folder, skip the `cd` step and run the installer directly.
-> In this workspace, the project root is the folder named `Ads Blocker for Window`.
 > On Windows 10 and 11, the most common cause of a service failing to start is Windows App Control / WDAC / AppLocker blocking an unsigned executable. This is a Windows security policy check, not proof that the project is malicious. The installer attempts to create and trust a local code-signing certificate and signs the service before installation.
 
 > The installer script must be run from an Administrator PowerShell window because it creates and configures a Windows service.
+
+## Master Command
+
+Run this single command in PowerShell to clone the project, open an elevated PowerShell window, build the release binaries, install the service, and start it:
+
+```powershell
+$repo = Join-Path $HOME 'ad-Blocker-for-window'; git clone 'https://github.com/myself-bikash/ad-Blocker-for-window.git' $repo; Set-Location $repo; Start-Process powershell.exe -Verb RunAs -Wait -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File',"$repo\scripts\install.ps1"
+```
+
+The elevated window may ask for Administrator approval. After it finishes, verify the service with:
+
+```powershell
+Get-Service AdBlockService
+```
 
 ## Build and Test
 
@@ -101,7 +115,7 @@ The correct production-safe approach is to sign the service binary with a valid 
 ## Install as Administrator
 
 ```powershell
-cd "Ads Blocker for Window"
+cd ad-Blocker-for-window
 .\scripts\install.ps1
 ```
 
