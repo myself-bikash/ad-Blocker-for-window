@@ -73,6 +73,10 @@ cd "Ads Blocker for Window"
 .\scripts\install.ps1
 ```
 
+> If you are already inside the repository folder, skip the `cd` step and run the installer directly.
+> In this workspace, the project root is the folder named `Ads Blocker for Window`.
+> On Windows 10 and 11, the most common cause of a service failing to start is Windows App Control / WDAC / AppLocker blocking an unsigned executable. This is a Windows security policy check, not proof that the project is malicious. The installer attempts to create and trust a local code-signing certificate and signs the service before installation.
+
 > The installer script must be run from an Administrator PowerShell window because it creates and configures a Windows service.
 
 ## Build and Test
@@ -80,11 +84,19 @@ cd "Ads Blocker for Window"
 From the project root:
 
 ```powershell
-cargo build --workspace --bins
+cargo build --release --workspace --bins
 cargo test -p adblock-service --lib -- --nocapture
 cargo test -p adblock-core -- --nocapture
 cargo test -p adblock-rules --lib -- --nocapture
 ```
+
+> This project installs a Windows background service that can trigger Microsoft Defender or Windows App Control warnings. The service should be signed before distribution and installed only by a user who understands the system-level network filtering behavior.
+
+## Windows Security Note
+
+Windows may flag the service as suspicious because it is a background Windows service that modifies network-related behavior. This is usually caused by Windows Defender SmartScreen, App Control for Business, WDAC, or AppLocker policies. The project is not inherently malicious, but because it installs a local service that filters or intercepts network activity, Windows treats it more strictly than a normal app.
+
+The correct production-safe approach is to sign the service binary with a valid Authenticode certificate, install it in a trusted location such as `C:\Program Files`, and run the installer as Administrator only after the user understands that the service changes system-level network behavior.
 
 ## Install as Administrator
 
@@ -98,9 +110,21 @@ The script will:
 - check Administrator privileges
 - stop and clean any stale AdBlockService
 - build the binaries
-- copy them into `%LOCALAPPDATA%\AdBlocker`
+- create a local code-signing certificate if needed
+- sign the service executable so Windows 10/11 App Control allows it
+- copy them into `%ProgramFiles%\AdBlocker`
 - create the Windows service
 - start the service automatically
+
+For a signed release build, run:
+
+```powershell
+cargo build --release --workspace --bins
+.\scripts\sign-release.ps1
+.\scripts\install.ps1
+```
+
+> The signing helper is intended for production-safe Windows distribution. In some environments, the OS will still block unsigned build artifacts or service binaries because they modify system-level network behavior.
 
 ## Stale Service Cleanup
 
